@@ -11,7 +11,7 @@ use ApacheBorys\Retry\Traits\GetterEntity;
  * @method string getName()
  * @method string getHandledException()
  * @method int getMaxRetries()
- * @method array getFormulaToCalculateTimeForNextTry()
+ * @method FormulaItem[] getFormulaToCalculateTimeForNextTry()
  * @method Transport getTransport()
  * @method Executor getExecutor()
  */
