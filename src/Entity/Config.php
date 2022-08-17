@@ -42,7 +42,12 @@ class Config
         $this->name = $name;
         $this->handledException = $handledException;
         $this->maxRetries = $maxRetries;
-        $this->formulaToCalculateTimeForNextTry = $formulaToCalculateTimeForNextTry;
+
+        $this->formulaToCalculateTimeForNextTry = [];
+        foreach ($formulaToCalculateTimeForNextTry as $item) {
+            $this->formulaToCalculateTimeForNextTry[] = new FormulaItem($item['operator'], $item['argument']);
+        }
+
         $this->transport = $transport;
         $this->executor = $executor;
     }
