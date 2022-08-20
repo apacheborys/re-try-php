@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ApacheBorys\Retry\Tests\Transport;
+namespace ApacheBorys\Retry\Tests\Functional\Transport;
 
 use ApacheBorys\Retry\Entity\Config;
 use ApacheBorys\Retry\Entity\Message;
@@ -21,5 +21,10 @@ class Runtime implements Transport
     public function howManyTriesWasBefore(\Throwable $exception, Config $config): int
     {
         return 1;
+    }
+
+    public function getMessages(): array
+    {
+        return $this->storage;
     }
 }

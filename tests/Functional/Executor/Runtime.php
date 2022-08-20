@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ApacheBorys\Retry\Tests\Executor;
+namespace ApacheBorys\Retry\Tests\Functional\Executor;
 
 use ApacheBorys\Retry\Entity\Config;
 use ApacheBorys\Retry\Interfaces\Executor;

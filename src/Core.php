@@ -13,7 +13,7 @@ use ApacheBorys\Retry\ValueObject\FormulaArgument;
 class Core
 {
     /** @var Config[] */
-    private array $config;
+    protected array $config;
 
     public function __construct(array $config = [])
     {
@@ -48,6 +48,8 @@ class Core
                             get_class($retryConfig->getExecutor())
                         )
                     );
+
+                    throw $exception;
                 }
             }
         };

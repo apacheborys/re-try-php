@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace ApacheBorys\Retry\Tests;
+namespace ApacheBorys\Retry\Tests\Functional;
 
-use ApacheBorys\Retry\Core;
+use ApacheBorys\Retry\Tests\Functional\Exceptions\Mock;
+use ApacheBorys\Retry\Tests\Mock\TestCore;
 use ApacheBorys\Retry\ValueObject\FormulaArgument;
 use PHPUnit\Framework\TestCase;
 
@@ -11,9 +12,14 @@ class CoreTest extends TestCase
 {
     public function testConstruction(): void
     {
-        $retry = new Core($this->configurationDataProvider());
+        $retry = new TestCore($this->configurationDataProvider());
         $retry->initHandler();
 
+        $this->expectException(Mock::class);
+        $this->throwException(new Mock('Test exception'));
+
+        $messages = $retry->getConfig('test')->getTransport()->getMessages();
+        $this->assertEquals(1, count($messages));
     }
 
     public function configurationDataProvider(): array
