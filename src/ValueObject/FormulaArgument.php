@@ -18,16 +18,17 @@ class FormulaArgument
         $matches = [];
         preg_match_all('/\d/', $value, $matches, PREG_PATTERN_ORDER);
 
-        if (!in_array($value, $this->getAvailableKeywords(), true) || (!isset($matches[1]) || count($matches[1]) === 0)) {
+        if (!in_array($value, $this->getAvailableKeywords(), true) && (!isset($matches[0]) || count($matches[0]) === 0)) {
             throw new WrongArgument(
                 sprintf(
-                    'Argument can contain digits or some specific words only: %s',
-                    implode(", ", $this->getAvailableKeywords())
+                    'Argument can contain digits or some specific words only: %s. You provided: %s',
+                    implode(", ", $this->getAvailableKeywords()),
+                    $value
                 )
             );
         }
 
-        if (isset($matches[1]) && count($matches[1]) > 0) {
+        if (isset($matches[0]) && count($matches[0]) > 0) {
             $this->argumentType = new ArgumentType(ArgumentType::DIGIT);
         } elseif (in_array($value, $this->getAvailableKeywords(), true)) {
             $this->argumentType = new ArgumentType(ArgumentType::KEYWORD);

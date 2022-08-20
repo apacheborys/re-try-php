@@ -39,15 +39,19 @@ class Core
         return function (\Throwable $exception) use ($config) {
             foreach ($config as $retryConfig) {
                 if (get_class($exception) === $retryConfig->getHandledException()) {
-                    $retryConfig->getTransport()->send(
-                        new Message(
-                            $retryConfig->getName(),
-                            $this->compilePayload($exception, $retryConfig),
-                            $this->getTryNumber($exception, $retryConfig),
-                            $this->calculateNextTimeForTry($exception, $retryConfig),
-                            get_class($retryConfig->getExecutor())
-                        )
-                    );
+                    $tryNumber = $this->getTryNumber($exception, $retryConfig);
+
+                    if ($tryNumber < $retryConfig->getMaxRetries()) {
+                        $retryConfig->getTransport()->send(
+                            new Message(
+                                $retryConfig->getName(),
+                                $this->compilePayload($exception, $retryConfig),
+                                $tryNumber,
+                                $this->calculateNextTimeForTry($exception, $retryConfig),
+                                get_class($retryConfig->getExecutor())
+                            )
+                        );
+                    }
 
                     throw $exception;
                 }

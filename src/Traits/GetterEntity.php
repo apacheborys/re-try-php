@@ -7,8 +7,8 @@ trait GetterEntity
 {
     public function __call($name, $arguments)
     {
-        if (substr($name, 0, 3) === 'get' && property_exists($this, substr($name, 3))) {
-            return $this->{strtolower(substr($name, 3))};
+        if (substr($name, 0, 3) === 'get' && property_exists($this, lcfirst(substr($name, 3)))) {
+            return $this->{lcfirst(substr($name, 3))};
         }
 
         throw new \Exception(
