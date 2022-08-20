@@ -50,4 +50,15 @@ class Message
             'executor' => $this->executor,
         ]);
     }
+
+    public static function fromArray(array $data): self
+    {
+        return new Message(
+            (string) $data['retryName'],
+            (array) $data['payload'],
+            (int) $data['tryCounter'],
+            new \DateTimeImmutable($data['shouldBeExecutedAt']),
+            (string) $data['executor']
+        );
+    }
 }

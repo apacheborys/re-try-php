@@ -9,11 +9,16 @@ use ApacheBorys\Retry\Interfaces\Transport;
 
 class FileTransportForTests implements Transport
 {
+    public const ENV_VAR_FOR_CORRELATION_ID = 'RETRY_CORRELATION_ID';
+
     private $fp;
+
+    private string $fileName;
 
     public function __construct(string $fileName)
     {
         $this->fp = fopen($fileName, 'a');
+        $this->fileName = $fileName;
     }
 
     public function send(Message $message): bool
@@ -23,6 +28,16 @@ class FileTransportForTests implements Transport
 
     public function howManyTriesWasBefore(\Throwable $exception, Config $config): int
     {
-        return 1;
+        $messages = [];
+        $handle = fopen($this->fileName, 'r');
+
+        while (($line = fgets($handle)) !== false) {
+            $tmpMessage = Message::fromArray(json_decode($line));
+            $messages[$tmpMessage->getPayload()['correlationId'] ?? ''][] = $tmpMessage;
+        }
+
+        fclose($handle);
+
+        return count($messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']);
     }
 }
