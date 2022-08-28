@@ -7,6 +7,7 @@ use ApacheBorys\Retry\Traits\GetterEntity;
 
 /**
  * @method string getRetryName()
+ * @method string getCorrelationId()
  * @method array getPayload()
  * @method int getTryCounter()
  * @method \DateTimeImmutable getShouldBeExecutedAt()
@@ -18,6 +19,8 @@ class Message
 
     private string $retryName;
 
+    private string $correlationId;
+
     private array $payload;
 
     private int $tryCounter;
@@ -28,12 +31,14 @@ class Message
 
     public function __construct(
         string $retryName,
+        string $correlationId,
         array $payload,
         int $tryCounter,
         \DateTimeImmutable $shouldBeExecutedAt,
         string $executor
     ) {
         $this->retryName = $retryName;
+        $this->correlationId = $correlationId;
         $this->payload = $payload;
         $this->tryCounter = $tryCounter;
         $this->shouldBeExecutedAt = $shouldBeExecutedAt;
@@ -44,6 +49,7 @@ class Message
     {
         return json_encode([
             'retryName' => $this->retryName,
+            'correlationId' => $this->correlationId,
             'payload' => $this->payload,
             'tryCounter' => $this->tryCounter,
             'shouldBeExecutedAt' => $this->shouldBeExecutedAt->format('c'),
@@ -55,6 +61,7 @@ class Message
     {
         return new Message(
             (string) $data['retryName'],
+            (string) $data['correlationId'],
             (array) $data['payload'],
             (int) $data['tryCounter'],
             new \DateTimeImmutable($data['shouldBeExecutedAt']),

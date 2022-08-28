@@ -10,4 +10,6 @@ interface Executor
     public function handle(): bool;
 
     public function compilePayload(\Throwable $exception, Config $config): array;
+
+    public function getCorrelationId(\Throwable $exception, Config $config): string;
 }

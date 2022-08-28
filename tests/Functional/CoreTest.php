@@ -19,4 +19,11 @@ class CoreTest extends TestCase
 
         unlink (self::TRANSPORT_FILE);
     }
+
+    public function __destruct()
+    {
+        if (file_exists(self::TRANSPORT_FILE)) {
+            unlink(self::TRANSPORT_FILE);
+        }
+    }
 }

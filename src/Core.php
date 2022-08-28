@@ -45,6 +45,7 @@ class Core
                         $retryConfig->getTransport()->send(
                             new Message(
                                 $retryConfig->getName(),
+                                $retryConfig->getExecutor()->getCorrelationId($exception, $retryConfig),
                                 $this->compilePayload($exception, $retryConfig),
                                 $tryNumber,
                                 $this->calculateNextTimeForTry($exception, $retryConfig),

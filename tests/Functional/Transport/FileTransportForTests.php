@@ -38,6 +38,6 @@ class FileTransportForTests implements Transport
 
         fclose($handle);
 
-        return count($messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']);
+        return count((array) $messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']);
     }
 }
