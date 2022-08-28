@@ -13,7 +13,6 @@ class CoreTest extends TestCase
     {
         $output = exec('php tests/Functional/core-test.php');
 
-        $this->assertTrue((bool) strpos($output,'tests/Functional/core-test.php on line 39'), $output);
         $messages = explode(PHP_EOL, file_get_contents(self::TRANSPORT_FILE));
         $this->assertEquals(2, count($messages));
 
