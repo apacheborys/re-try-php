@@ -40,4 +40,23 @@ class FileTransportForTests implements Transport
 
         return count((array) $messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']);
     }
+
+    public function fetchMessage(int $batchSize = -1): ?iterable
+    {
+        $messages = [];
+
+        $handle = fopen($this->fileName, 'r');
+
+        while (($line = fgets($handle)) !== false) {
+            if ($batchSize === -1) {
+                yield Message::fromArray(json_decode($line));
+            } else {
+                $messages[] = Message::fromArray(json_decode($line));
+            }
+        }
+
+        fclose($handle);
+
+        return $messages;
+    }
 }

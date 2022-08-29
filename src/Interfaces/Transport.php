@@ -11,7 +11,7 @@ interface Transport
     public function send(Message $message): bool;
 
     /** @return Message[]|null */
-    public function fetchMessage(int $batchSize = -1): ?array;
+    public function fetchMessage(int $batchSize = -1): ?iterable;
 
     public function howManyTriesWasBefore(\Throwable $exception, Config $config): int;
 }
