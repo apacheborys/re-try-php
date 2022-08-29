@@ -6,6 +6,7 @@ namespace ApacheBorys\Retry\Tests\Functional\Transport;
 use ApacheBorys\Retry\Entity\Config;
 use ApacheBorys\Retry\Entity\Message;
 use ApacheBorys\Retry\Interfaces\Transport;
+use Throwable;
 
 class FileTransportForTests implements Transport
 {
@@ -32,7 +33,7 @@ class FileTransportForTests implements Transport
         $handle = fopen($this->fileName, 'r');
 
         while (($line = fgets($handle)) !== false) {
-            $tmpMessage = Message::fromArray(json_decode($line));
+            $tmpMessage = Message::fromArray(json_decode($line, true));
             $messages[$tmpMessage->getPayload()['correlationId'] ?? ''][] = $tmpMessage;
         }
 
@@ -41,22 +42,72 @@ class FileTransportForTests implements Transport
         return count((array) $messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']);
     }
 
-    public function fetchMessage(int $batchSize = -1): ?iterable
+    public function fetchUnprocessedMessages(int $batchSize = -1): ?iterable
     {
         $messages = [];
 
         $handle = fopen($this->fileName, 'r');
 
         while (($line = fgets($handle)) !== false) {
+            $message = Message::fromArray(json_decode($line, true));
+
+            if ($message->getIsProcessed()) {
+                continue;
+            }
+
             if ($batchSize === -1) {
-                yield Message::fromArray(json_decode($line));
+                yield $message;
             } else {
-                $messages[] = Message::fromArray(json_decode($line));
+                $messages[] = $message;
             }
         }
 
         fclose($handle);
 
         return $messages;
+    }
+
+    public function markMessageAsProcessed(Message $message): bool
+    {
+        $fp = fopen($this->fileName, 'r+');
+
+        while (($line = fgets($fp)) !== false) {
+            $temp = Message::fromArray(json_decode($line, true));
+            $messagesFromStorage[$temp->getId()] = $temp;
+        }
+
+        $messagesFromStorage[$message->getId()]->markAsProcessed();
+
+        fclose($fp);
+
+        $fp = fopen($this->fileName, 'w');
+
+        foreach($messagesFromStorage as $message) {
+            fputs($fp,  $message . PHP_EOL);
+        }
+
+        fclose($fp);
+
+        return true;
+    }
+
+    public function getNextId(Throwable $exception, Config $config): string
+    {
+        $fp = fopen($this->fileName, 'r+');
+
+        $counter = 0;
+
+        while (($line = fgets($fp)) !== false) {
+            $counter++;
+        }
+
+        fclose($fp);
+
+        return (string) $counter;
+    }
+
+    public function __destruct()
+    {
+        fclose($this->fp);
     }
 }

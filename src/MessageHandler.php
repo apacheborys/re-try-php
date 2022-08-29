@@ -8,10 +8,11 @@ class MessageHandler extends AbstractHandler
     public function processRetries(array $processExceptionsOnly = [], int $maxMessagesPerException = -1)
     {
         foreach ($this->config as $config) {
-            $messages = $config->getTransport()->fetchMessage($maxMessagesPerException);
+            $messages = $config->getTransport()->fetchUnprocessedMessages($maxMessagesPerException);
             
             foreach ($messages as $message) {
                 $config->getExecutor()->handle($message);
+                $config->getTransport()->markMessageAsProcessed($message);
             }
 
             return;

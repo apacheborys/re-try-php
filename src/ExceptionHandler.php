@@ -36,10 +36,12 @@ class ExceptionHandler extends AbstractHandler
                     if ($tryNumber < $retryConfig->getMaxRetries()) {
                         $retryConfig->getTransport()->send(
                             new Message(
+                                $retryConfig->getTransport()->getNextId($exception, $retryConfig),
                                 $retryConfig->getName(),
                                 $retryConfig->getExecutor()->getCorrelationId($exception, $retryConfig),
                                 $this->compilePayload($exception, $retryConfig),
                                 $tryNumber,
+                                false,
                                 $this->calculateNextTimeForTry($exception, $retryConfig),
                                 get_class($retryConfig->getExecutor())
                             )

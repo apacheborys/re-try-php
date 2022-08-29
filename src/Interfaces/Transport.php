@@ -11,7 +11,11 @@ interface Transport
     public function send(Message $message): bool;
 
     /** @return Message[]|null */
-    public function fetchMessage(int $batchSize = -1): ?iterable;
+    public function fetchUnprocessedMessages(int $batchSize = -1): ?iterable;
+
+    public function getNextId(\Throwable $exception, Config $config): string;
 
     public function howManyTriesWasBefore(\Throwable $exception, Config $config): int;
+
+    public function markMessageAsProcessed(Message $message): bool;
 }
