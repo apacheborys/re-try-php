@@ -10,16 +10,8 @@ use ApacheBorys\Retry\Exceptions\WrongArgument;
 use ApacheBorys\Retry\ValueObject\ArgumentType;
 use ApacheBorys\Retry\ValueObject\FormulaArgument;
 
-class Core
+class ExceptionHandler extends AbstractHandler
 {
-    /** @var Config[] */
-    protected array $config;
-
-    public function __construct(array $config = [])
-    {
-        $this->config = $this->initConfig($config);
-    }
-
     /**
      * Should be called externally by application
      */
@@ -58,28 +50,6 @@ class Core
                 }
             }
         };
-    }
-
-    /**
-     * @param array $config
-     * @return Config[]
-     */
-    private function initConfig(array $config): array
-    {
-        $result = [];
-
-        foreach ($config as $retryName => $configNode) {
-            $result[$retryName] = new Config(
-                (string) $retryName,
-                (string) $configNode['exception'],
-                (int) $configNode['maxRetries'],
-                $configNode['formula'],
-                new $configNode['transport']['class'](...$configNode['transport']['arguments'] ?? []),
-                new $configNode['executor']['class'](...$configNode['executor']['arguments'] ?? []),
-            );
-        }
-
-        return $result;
     }
 
     private function compilePayload(\Throwable $exception, Config $config): array

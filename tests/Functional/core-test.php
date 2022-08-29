@@ -1,12 +1,12 @@
 <?php
 
-use ApacheBorys\Retry\Core;
+use ApacheBorys\Retry\ExceptionHandler;
 use ApacheBorys\Retry\Tests\Functional\Exceptions\Mock;
 use ApacheBorys\Retry\ValueObject\FormulaArgument;
 
 include 'vendor/autoload.php';
 
-$retry = new Core([
+$retry = new ExceptionHandler([
     'test' => [
         'exception' => 'ApacheBorys\\Retry\\Tests\\Functional\\Exceptions\\Mock',
         'maxRetries' => 4,

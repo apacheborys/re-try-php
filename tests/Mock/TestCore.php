@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry\Tests\Mock;
 
-use ApacheBorys\Retry\Core;
+use ApacheBorys\Retry\ExceptionHandler;
 use ApacheBorys\Retry\Entity\Config;
 
-class TestCore extends Core
+class TestCore extends ExceptionHandler
 {
     public function getConfig(string $retryName): Config
     {
