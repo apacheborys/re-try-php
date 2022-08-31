@@ -3,6 +3,8 @@
 [![ReTry](https://github.com/apacheborys/re-try-php/actions/workflows/php.yml/badge.svg)](https://github.com/apacheborys/re-try-php/actions/workflows/php.yml)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 
+That library still in development phase. Please don't use it until first release
+
 With this library you will be able to introduce re-try approach in simple way:
 1. Create configuration
 2. When your application start, please add next 2 rows in the begining:
