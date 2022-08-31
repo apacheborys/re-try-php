@@ -1,0 +1,33 @@
+{
+    "name": "apacheborys/re-try-php",
+    "description": "Library to operate retries in your php application",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Borys Yermokhin",
+            "email": "borys_ermokhin@yahoo.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4||^8.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9.5.21"
+    },
+    "scripts": {
+        "test": [
+            "php vendor/bin/phpunit tests"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "ApacheBorys\\Retry\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ApacheBorys\\Retry\\Tests\\": "tests/"
+        }
+    }
+}

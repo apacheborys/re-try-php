@@ -1,0 +1,5 @@
+Implement Configuration interface to make more flexible and straight forward approach for any kind of configuration format (yaml, xml, json, mixed)
+Introduce first transport
+Introduce first executor
+Create bridge for Symphony framework
+Create bridge for Laravel framework
