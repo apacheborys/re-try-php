@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry\Exceptions;
 
-use Throwable;
+use Throwable, Exception;
 
-class WrongOperator extends \Exception
+class WrongOperator extends Exception
 {
     public function __construct(string $message, int $code = 0, Throwable $previous = null)
     {

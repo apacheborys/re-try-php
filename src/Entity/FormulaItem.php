@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace ApacheBorys\Retry\Entity;
 
 use ApacheBorys\Retry\Traits\GetterEntity;
-use ApacheBorys\Retry\ValueObject\FormulaArgument;
-use ApacheBorys\Retry\ValueObject\FormulaOperator;
+use ApacheBorys\Retry\ValueObject\{FormulaArgument, FormulaOperator};
 
 /**
  * @method FormulaOperator getOperator()

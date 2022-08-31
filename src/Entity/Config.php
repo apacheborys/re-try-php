@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry\Entity;
 
-use ApacheBorys\Retry\Interfaces\Executor;
-use ApacheBorys\Retry\Interfaces\Transport;
+use ApacheBorys\Retry\Interfaces\{Executor, Transport};
 use ApacheBorys\Retry\Traits\GetterEntity;
 
 /**

@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry\Interfaces;
 
-use ApacheBorys\Retry\Entity\Config;
-use ApacheBorys\Retry\Entity\Message;
+use ApacheBorys\Retry\Entity\{Config, Message};
 
 interface Transport
 {

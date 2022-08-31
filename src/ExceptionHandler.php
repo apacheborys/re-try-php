@@ -3,12 +3,9 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry;
 
-use ApacheBorys\Retry\Entity\Config;
-use ApacheBorys\Retry\Entity\FormulaItem;
-use ApacheBorys\Retry\Entity\Message;
+use ApacheBorys\Retry\Entity\{Config, FormulaItem, Message};
 use ApacheBorys\Retry\Exceptions\WrongArgument;
-use ApacheBorys\Retry\ValueObject\ArgumentType;
-use ApacheBorys\Retry\ValueObject\FormulaArgument;
+use ApacheBorys\Retry\ValueObject\{ArgumentType, FormulaArgument};
 
 class ExceptionHandler extends AbstractHandler
 {
