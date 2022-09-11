@@ -14,6 +14,9 @@ interface Transport
 
     public function getNextId(\Throwable $exception, Config $config): string;
 
+    /** @return Message[] */
+    public function getMessages(int $limit = 100, int $offset = 0, bool $byStream = false): iterable;
+
     public function howManyTriesWasBefore(\Throwable $exception, Config $config): int;
 
     public function markMessageAsProcessed(Message $message): bool;
