@@ -10,8 +10,12 @@ class MessageHandler extends AbstractHandler
     public function processRetries(array $processExceptionsOnly = [], int $maxMessagesPerException = -1)
     {
         foreach ($this->config as $config) {
+            if (!empty($processExceptionsOnly) && !in_array($config->getName(), $processExceptionsOnly, true)) {
+                continue;
+            }
+
             $messages = $config->getTransport()->fetchUnprocessedMessages($maxMessagesPerException);
-            
+
             foreach ($messages as $message) {
                 if (!$config->getExecutor()->handle($message)) {
                     throw new MessageHandlerFailed();
@@ -21,8 +25,6 @@ class MessageHandler extends AbstractHandler
                     throw new MessageCantMarkAsProcessed();
                 }
             }
-
-            return;
         }
     }
 }

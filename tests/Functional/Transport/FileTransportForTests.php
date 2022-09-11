@@ -59,12 +59,37 @@ class FileTransportForTests implements Transport
                 yield $message;
             } else {
                 $messages[] = $message;
-            }
+            };
         }
 
         fclose($handle);
 
-        return $messages;
+        if ($batchSize !== -1) {
+            return $messages;
+        }
+    }
+
+    public function getMessages(int $limit = 100, int $offset = 0, bool $byStream = false): iterable
+    {
+        $messages = [];
+
+        $handle = fopen($this->fileName, 'r');
+
+        while (($line = fgets($handle)) !== false) {
+            $message = Message::fromArray(json_decode($line, true));
+
+            if ($byStream) {
+                yield $message;
+            } else {
+                $messages[] = $message;
+            };
+        }
+
+        fclose($handle);
+
+        if (!$byStream) {
+            return $messages;
+        }
     }
 
     public function markMessageAsProcessed(Message $message): bool
