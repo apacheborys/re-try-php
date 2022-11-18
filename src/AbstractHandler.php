@@ -18,6 +18,7 @@ abstract class AbstractHandler
     /**
      * @param array $config
      * @return Config[]
+     * @psalm-suppress ArgumentTypeCoercion
      */
     private function initConfig(array $config): array
     {

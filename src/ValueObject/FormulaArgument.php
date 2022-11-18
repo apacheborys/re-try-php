@@ -11,6 +11,7 @@ class FormulaArgument
 
     private string $value;
 
+    /** @psalm-suppress PropertyNotSetInConstructor */
     private ArgumentType $argumentType;
 
     public function __construct(string $value)

@@ -23,7 +23,7 @@ class ArgumentType
         $this->value = $value;
     }
 
-    public static function getAvailableKeywords()
+    public static function getAvailableKeywords(): array
     {
         return [
             self::DIGIT,
