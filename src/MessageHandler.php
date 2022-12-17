@@ -7,7 +7,7 @@ use ApacheBorys\Retry\Exceptions\{MessageCantMarkAsProcessed, MessageHandlerFail
 
 class MessageHandler extends AbstractHandler
 {
-    public function processRetries(array $processExceptionsOnly = [], int $maxMessagesPerException = -1)
+    public function processRetries(array $processExceptionsOnly = [], int $maxMessagesPerException = -1): void
     {
         foreach ($this->config as $config) {
             if (!empty($processExceptionsOnly) && !in_array($config->getName(), $processExceptionsOnly, true)) {
@@ -16,7 +16,7 @@ class MessageHandler extends AbstractHandler
 
             $messages = $config->getTransport()->fetchUnprocessedMessages($maxMessagesPerException);
 
-            foreach ($messages as $message) {
+            foreach ($messages ?? [] as $message) {
                 if (!$config->getExecutor()->handle($message)) {
                     throw new MessageHandlerFailed();
                 }

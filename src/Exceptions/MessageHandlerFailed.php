@@ -7,7 +7,7 @@ use Exception, Throwable;
 
 class MessageHandlerFailed extends Exception
 {
-    public function __construct($code = 0, Throwable $previous = null)
+    public function __construct(int $code = 0, Throwable $previous = null)
     {
         parent::__construct("Message hanler returned failed status during message processing", $code, $previous);
     }
