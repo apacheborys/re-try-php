@@ -87,7 +87,7 @@ class Message
             (array) $data[self::ELEM_PAYLOAD],
             (int) $data[self::ELEM_TRY_COUNTER],
             (bool) $data[self::ELEM_IS_PROCESSED],
-            new \DateTimeImmutable($data[self::ELEM_SHOULD_BE_EXECUTED_AT]),
+            new \DateTimeImmutable((string) $data[self::ELEM_SHOULD_BE_EXECUTED_AT]),
             (string) $data[self::ELEM_EXECUTOR]
         );
     }
