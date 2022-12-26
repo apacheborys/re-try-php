@@ -17,6 +17,15 @@ use ApacheBorys\Retry\Traits\GetterEntity;
  */
 class Message
 {
+    public const ELEM_ID = 'id';
+    public const ELEM_RETRY_NAME = 'retryName';
+    public const ELEM_CORRELATION_ID = 'correlationId';
+    public const ELEM_PAYLOAD = 'payload';
+    public const ELEM_TRY_COUNTER = 'tryCounter';
+    public const ELEM_IS_PROCESSED = 'isProcessed';
+    public const ELEM_SHOULD_BE_EXECUTED_AT = 'shouldBeExecutedAt';
+    public const ELEM_EXECUTOR = 'executor';
+
     use GetterEntity;
 
     private string $id;
@@ -58,28 +67,28 @@ class Message
     public function __toString(): string
     {
         return json_encode([
-            'id' => $this->id,
-            'retryName' => $this->retryName,
-            'correlationId' => $this->correlationId,
-            'payload' => $this->payload,
-            'tryCounter' => $this->tryCounter,
-            'isProcessed' => $this->isProcessed,
-            'shouldBeExecutedAt' => $this->shouldBeExecutedAt->format('c'),
-            'executor' => $this->executor,
+            self::ELEM_ID => $this->id,
+            self::ELEM_RETRY_NAME => $this->retryName,
+            self::ELEM_CORRELATION_ID => $this->correlationId,
+            self::ELEM_PAYLOAD => $this->payload,
+            self::ELEM_TRY_COUNTER => $this->tryCounter,
+            self::ELEM_IS_PROCESSED => $this->isProcessed,
+            self::ELEM_SHOULD_BE_EXECUTED_AT => $this->shouldBeExecutedAt->format('c'),
+            self::ELEM_EXECUTOR => $this->executor,
         ]);
     }
 
     public static function fromArray(array $data): self
     {
         return new Message(
-            (string) $data['id'],
-            (string) $data['retryName'],
-            (string) $data['correlationId'],
-            (array) $data['payload'],
-            (int) $data['tryCounter'],
-            (bool) $data['isProcessed'],
-            new \DateTimeImmutable($data['shouldBeExecutedAt']),
-            (string) $data['executor']
+            (string) $data[self::ELEM_ID],
+            (string) $data[self::ELEM_RETRY_NAME],
+            (string) $data[self::ELEM_CORRELATION_ID],
+            (array) $data[self::ELEM_PAYLOAD],
+            (int) $data[self::ELEM_TRY_COUNTER],
+            (bool) $data[self::ELEM_IS_PROCESSED],
+            new \DateTimeImmutable((string) $data[self::ELEM_SHOULD_BE_EXECUTED_AT]),
+            (string) $data[self::ELEM_EXECUTOR]
         );
     }
 
