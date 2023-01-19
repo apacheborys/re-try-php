@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry;
 
+use ApacheBorys\Retry\Interfaces\HandlerExceptionDeclaratorInterface;
 use ApacheBorys\Retry\Entity\{Config, FormulaItem, Message};
 use ApacheBorys\Retry\Exceptions\WrongArgument;
 use ApacheBorys\Retry\ValueObject\{ArgumentType, FormulaArgument};
@@ -14,9 +15,12 @@ class ExceptionHandler extends AbstractHandler
      */
     public function initHandler(): void
     {
-        set_exception_handler(
-            $this->getHandling($this->config)
-        );
+        $this->declarator->initHandler($this->getHandling($this->config));
+    }
+
+    public function getDeclarator(): HandlerExceptionDeclaratorInterface
+    {
+        return $this->declarator;
     }
 
     /**
