@@ -39,7 +39,8 @@ class FileTransportForTests implements Transport
 
         fclose($handle);
 
-        return count((array) $messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']);
+        return isset($messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']) ?
+            count((array) $messages[getenv(self::ENV_VAR_FOR_CORRELATION_ID) ?? '']) : 0;
     }
 
     public function fetchUnprocessedMessages(int $batchSize = -1): ?iterable
