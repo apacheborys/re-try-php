@@ -4,11 +4,15 @@ declare(strict_types=1);
 namespace ApacheBorys\Retry;
 
 use ApacheBorys\Retry\Entity\Config;
+use ApacheBorys\Retry\HandlerExceptionDefiner\StandardHandlerExceptionDeclarator;
+use ApacheBorys\Retry\Interfaces\HandlerExceptionDeclaratorInterface;
 
 abstract class AbstractHandler
 {
     /** @var Config[] */
     protected array $config;
+
+    protected HandlerExceptionDeclaratorInterface $declarator;
 
     public function __construct(array $config = [])
     {
@@ -19,12 +23,16 @@ abstract class AbstractHandler
      * @param array $config
      * @return Config[]
      * @psalm-suppress ArgumentTypeCoercion
+     * @psalm-suppress PropertyTypeCoercion
      */
     private function initConfig(array $config): array
     {
         $result = [];
 
-        foreach ($config as $retryName => $configNode) {
+        $definerClass = $config['handlerExceptionDeclarator']['class'] ?? StandardHandlerExceptionDeclarator::class;
+        $this->declarator = new $definerClass(...$config['handlerExceptionDeclarator']['arguments'] ?? []);
+
+        foreach ($config['items'] as $retryName => $configNode) {
             $result[$retryName] = new Config(
                 (string) $retryName,
                 (string) $configNode['exception'],

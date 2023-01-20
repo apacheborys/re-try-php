@@ -25,30 +25,49 @@ Config example:
 
 ```json
 {
-    "test": {       /* name of retry */
-        "exception": "ApacheBorys\\Retry\\Tests\\Functional\\Exceptions\\Mock", /* what type of Exception we would like to retry */
-        "maxRetries": 4, /* how many tries we should do */
+    /**
+      * here we can define declarator what should register exception handling callback function, if you are plan to use 
+      * standard php function set_exception_handler - you can ignore that section. StandardHandlerExceptionDeclarator is default
+     **/
+    "handlerExceptionDefiner": {
+      "class": "ApacheBorys\\Retry\\HandlerExceptionDefiner\\StandardHandlerExceptionDeclarator",
+      "arguments": []
+    },
+    "items": {
+      "test": {
+        /* name of retry */
+        "exception": "ApacheBorys\\Retry\\Tests\\Functional\\Exceptions\\Mock",
+        /* what type of Exception we would like to retry */
+        "maxRetries": 4,
+        /* how many tries we should do */
         /* here we are describing formula, how next execution time should be calculated. Calculated amount will be added to current time */
-        "formula": [ 
-            {
-                "operator": "+", /* here available *, -, + and / operators */
-                "argument": "QTY_TRIES" /* you can use QTY_TRIES operator or any integer value */
-            },
-            {
-                "operator": "*",
-                "argument": "5"
-            }
+        "formula": [
+          {
+            "operator": "+",
+            /* here available *, -, + and / operators */
+            "argument": "QTY_TRIES"
+            /* you can use QTY_TRIES operator or any integer value */
+          },
+          {
+            "operator": "*",
+            "argument": "5"
+          }
         ],
-        "transport": { /* here you should define, what kind of transport you would use to deliver re-try messages to worker */
-            "class": "ApacheBorys\\Retry\\Tests\\Functional\\Transport\\FileTransportForTests",
-            "arguments": [ /* each specific transport could have own arguments in constructor. Here you should define it */
-                "tests\/transport.data"
-            ]
+        "transport": {
+          /* here you should define, what kind of transport you would use to deliver re-try messages to worker */
+          "class": "ApacheBorys\\Retry\\Tests\\Functional\\Transport\\FileTransportForTests",
+          "arguments": [
+            /* each specific transport could have own arguments in constructor. Here you should define it */
+            "tests\/transport.data"
+          ]
         },
-        "executor": { /* here you should define, what kind of executor you would use to perform re-try action */
-            "class": "ApacheBorys\\Retry\\Tests\\Functional\\Executor\\Runtime",
-            "arguments": [] /* each specific executor could have own arguments in constructor. Here you should define it */
+        "executor": {
+          /* here you should define, what kind of executor you would use to perform re-try action */
+          "class": "ApacheBorys\\Retry\\Tests\\Functional\\Executor\\Runtime",
+          "arguments": []
+          /* each specific executor could have own arguments in constructor. Here you should define it */
         }
+      }
     }
 }
 ```
