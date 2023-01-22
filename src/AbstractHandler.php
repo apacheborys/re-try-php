@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ApacheBorys\Retry;
 
 use ApacheBorys\Retry\Entity\Config;
-use ApacheBorys\Retry\HandlerExceptionDefiner\StandardHandlerExceptionDeclarator;
+use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
 use ApacheBorys\Retry\Interfaces\HandlerExceptionDeclaratorInterface;
 
 abstract class AbstractHandler

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ApacheBorys\Retry\HandlerExceptionDefiner;
+namespace ApacheBorys\Retry\HandlerExceptionDeclarator;
 
 use ApacheBorys\Retry\Interfaces\HandlerExceptionDeclaratorInterface;
 
