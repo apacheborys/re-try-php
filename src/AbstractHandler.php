@@ -6,16 +6,26 @@ namespace ApacheBorys\Retry;
 use ApacheBorys\Retry\Entity\Config;
 use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
 use ApacheBorys\Retry\Interfaces\HandlerExceptionDeclaratorInterface;
+use ApacheBorys\Retry\Traits\LogWrapper;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 abstract class AbstractHandler
 {
+    public const LOG_PREFIX = 'Retry lib: ';
+
+    use LogWrapper;
+
     /** @var Config[] */
     protected array $config;
 
+    protected ?LoggerInterface $logger;
+
     protected HandlerExceptionDeclaratorInterface $declarator;
 
-    public function __construct(array $config = [])
+    public function __construct(array $config = [], LoggerInterface $logger = null)
     {
+        $this->logger = $logger;
         $this->config = $this->initConfig($config);
     }
 
@@ -29,8 +39,10 @@ abstract class AbstractHandler
     {
         $result = [];
 
-        $definerClass = $config['handlerExceptionDeclarator']['class'] ?? StandardHandlerExceptionDeclarator::class;
-        $this->declarator = new $definerClass(...$config['handlerExceptionDeclarator']['arguments'] ?? []);
+        $declaratorClass = $config['handlerExceptionDeclarator']['class'] ?? StandardHandlerExceptionDeclarator::class;
+        $this->declarator = new $declaratorClass(...$config['handlerExceptionDeclarator']['arguments'] ?? []);
+
+        $this->sendLogRecordInitDeclarator($declaratorClass);
 
         foreach ($config['items'] as $retryName => $configNode) {
             $result[$retryName] = new Config(
@@ -43,6 +55,21 @@ abstract class AbstractHandler
             );
         }
 
+        $this->sendLogRecordInitConfigs(count($result));
+
         return $result;
+    }
+
+    private function sendLogRecordInitDeclarator(string $declaratorClass): void
+    {
+        $this->sendLogRecord(
+            LogLevel::INFO,
+            sprintf('Init for %s with handler exception declarator %s', get_class($this), $declaratorClass)
+        );
+    }
+
+    private function sendLogRecordInitConfigs(int $qty): void
+    {
+        $this->sendLogRecord(LogLevel::INFO, sprintf('Init for %s configs. Quantity: %d', get_class($this), $qty));
     }
 }
