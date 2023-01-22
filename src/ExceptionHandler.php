@@ -121,6 +121,6 @@ class ExceptionHandler extends AbstractHandler
 
     private function sendLogRecordAboutSentMessage(Message $message, bool $result): void
     {
-        $this->sendLogRecord(LogLevel::DEBUG, sprintf('Send new message id %s. Result is %s', $message->getId(), $result));
+        $this->sendLogRecord(LogLevel::DEBUG, sprintf('Send new message id %s. Result is %s', $message->getId(), (string) $result));
     }
 }
