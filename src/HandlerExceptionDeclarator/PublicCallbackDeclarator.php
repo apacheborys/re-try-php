@@ -7,8 +7,8 @@ use ApacheBorys\Retry\Interfaces\HandlerExceptionDeclaratorInterface;
 
 class PublicCallbackDeclarator implements HandlerExceptionDeclaratorInterface
 {
-    /** @var callable $callback */
-    private $callback;
+    /** @var callable|null $callback */
+    private $callback = null;
 
     public function initHandler(callable $callback): void
     {
@@ -17,6 +17,10 @@ class PublicCallbackDeclarator implements HandlerExceptionDeclaratorInterface
 
     public function getCallback(): callable
     {
+        if (is_null($this->callback)) {
+            throw new \LogicException('Callback still not initialized. Please call `getCallback` method after `initHandler`');
+        }
+
         return $this->callback;
     }
 }
