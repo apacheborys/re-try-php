@@ -7,6 +7,7 @@ use ApacheBorys\Retry\Interfaces\HandlerExceptionDeclaratorInterface;
 use ApacheBorys\Retry\Entity\{Config, FormulaItem, Message};
 use ApacheBorys\Retry\Exceptions\WrongArgument;
 use ApacheBorys\Retry\ValueObject\{ArgumentType, FormulaArgument};
+use Psr\Log\LogLevel;
 
 class ExceptionHandler extends AbstractHandler
 {
@@ -34,19 +35,23 @@ class ExceptionHandler extends AbstractHandler
                 if (get_class($exception) === $retryConfig->getHandledException()) {
                     $tryNumber = $this->getTryNumber($exception, $retryConfig);
 
+                    $this->sendLogRecordCatchException($retryConfig, $tryNumber);
+
                     if ($tryNumber < $retryConfig->getMaxRetries()) {
-                        $retryConfig->getTransport()->send(
-                            new Message(
-                                $retryConfig->getTransport()->getNextId($exception, $retryConfig),
-                                $retryConfig->getName(),
-                                $retryConfig->getExecutor()->getCorrelationId($exception, $retryConfig),
-                                $this->compilePayload($exception, $retryConfig),
-                                $tryNumber,
-                                false,
-                                $this->calculateNextTimeForTry($exception, $retryConfig),
-                                get_class($retryConfig->getExecutor())
-                            )
+                        $message = new Message(
+                            $retryConfig->getTransport()->getNextId($exception, $retryConfig),
+                            $retryConfig->getName(),
+                            $retryConfig->getExecutor()->getCorrelationId($exception, $retryConfig),
+                            $this->compilePayload($exception, $retryConfig),
+                            $tryNumber,
+                            false,
+                            $this->calculateNextTimeForTry($exception, $retryConfig),
+                            get_class($retryConfig->getExecutor())
                         );
+
+                        $result = $retryConfig->getTransport()->send($message);
+
+                        $this->sendLogRecordAboutSentMessage($message, $result);
                     }
 
                     throw $exception;
@@ -104,5 +109,18 @@ class ExceptionHandler extends AbstractHandler
                     )
                 );
         }
+    }
+
+    private function sendLogRecordCatchException(Config $retryConfig, int $tryNumber): void
+    {
+        $this->sendLogRecord(
+            LogLevel::DEBUG,
+            sprintf('Catch exception case for %s, try number is %d', $retryConfig->getHandledException(), $tryNumber)
+        );
+    }
+
+    private function sendLogRecordAboutSentMessage(Message $message, bool $result): void
+    {
+        $this->sendLogRecord(LogLevel::DEBUG, sprintf('Send new message id %s. Result is %s', $message->getId(), $result));
     }
 }
