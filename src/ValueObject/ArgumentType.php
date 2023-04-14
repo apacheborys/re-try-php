@@ -23,6 +23,9 @@ class ArgumentType
         $this->value = $value;
     }
 
+    /**
+     * @return string[]
+     */
     public static function getAvailableKeywords(): array
     {
         return [
