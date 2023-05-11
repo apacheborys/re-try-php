@@ -3,26 +3,32 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry\Tests\Functional;
 
+use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
 use ApacheBorys\Retry\MessageHandler;
+use ApacheBorys\Retry\Tests\Functional\Container\FakeContainer;
+use ApacheBorys\Retry\Tests\Functional\Transport\PdoTransportForTests;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
 class FunctionalTest extends TestCase
 {
     private const TRANSPORT_FILE = 'tests/transport.data';
-    private const CONFIG_FILE = __DIR__ . DIRECTORY_SEPARATOR . 'config.json';
 
     public function testExecution(): void
     {
-        exec('php tests/Functional/core-test.php');
+        $configFile = __DIR__ . DIRECTORY_SEPARATOR . 'config.json';
+        $fileToExec = 'tests/Functional/core-test.php';
+        $transportFile = self::TRANSPORT_FILE;
 
-        $pdo = $this->getPdo();
+        exec('php ' . $fileToExec);
+
+        $pdo = $this->getPdo($transportFile);
 
         $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
 
         $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
 
-        $config = json_decode(file_get_contents(self::CONFIG_FILE), true);
+        $config = json_decode(file_get_contents($configFile), true);
         $worker = new MessageHandler($config);
         $worker->processRetries(['Some\\Fake\\Class']);
 
@@ -36,12 +42,51 @@ class FunctionalTest extends TestCase
 
         $this->assertEquals(0, $this->howManyUnprocessedMessagesInDb($pdo));
 
-        unlink(self::TRANSPORT_FILE);
+        unlink($transportFile);
     }
 
-    private function getPdo(): PDO
+    public function testExecutionWithContainer(): void
     {
-        return new PDO('sqlite:' . self::TRANSPORT_FILE);
+        $configFile = __DIR__ . DIRECTORY_SEPARATOR . 'config-with-container-usage.json';
+        $fileToExec = 'tests/Functional/core-test-with-container-usage.php';
+        $transportFile = self::TRANSPORT_FILE;
+
+        exec('php ' . $fileToExec);
+
+        $container = new FakeContainer();
+
+        $pdoTransport = new PdoTransportForTests($transportFile);
+        $container->set(PdoTransportForTests::class, $pdoTransport);
+
+        $declarator = new StandardHandlerExceptionDeclarator();
+        $container->set(StandardHandlerExceptionDeclarator::class, $declarator);
+
+        $pdo = $this->getPdo($transportFile);
+
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
+
+        $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        $config = json_decode(file_get_contents($configFile), true);
+        $worker = new MessageHandler($config, null, $container);
+        $worker->processRetries(['Some\\Fake\\Class']);
+
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
+
+        $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        $worker->processRetries();
+
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
+
+        $this->assertEquals(0, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        unlink($transportFile);
+    }
+
+    private function getPdo(string $transportFile): PDO
+    {
+        return new PDO('sqlite:' . $transportFile);
     }
 
     private function howManyMessagesInDb(PDO $pdo): int
@@ -64,8 +109,8 @@ SQL;
 
     public function __destruct()
     {
-        if (file_exists(self::TRANSPORT_FILE)) {
-            unlink(self::TRANSPORT_FILE);
-        }
+//        if (file_exists(self::TRANSPORT_FILE)) {
+//            unlink(self::TRANSPORT_FILE);
+//        }
     }
 }

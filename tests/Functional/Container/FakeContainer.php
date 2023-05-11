@@ -7,30 +7,29 @@ use Psr\Container\ContainerInterface;
 
 class FakeContainer implements ContainerInterface
 {
-    private \SplObjectStorage $storage;
+    private array $storage;
 
     public function __construct()
     {
-        $this->storage = new \SplObjectStorage();
+        $this->storage = [];
     }
 
     public function get(string $id): object
     {
-        switch ($id) {
-            case 'storage':
-                return $this->storage;
-            default:
-                throw new \Exception(sprintf('Can\'t find instance for %s', $id));
+        if (isset($this->storage[$id])) {
+            return $this->storage[$id];
         }
+
+        throw new \Exception(sprintf('Can\'t find instance for %s', $id));
     }
 
     public function has(string $id): bool
     {
-        switch ($id) {
-            case 'storage':
-                return true;
-            default:
-                return false;
-        }
+        return isset($this->storage[$id]);
+    }
+
+    public function set(string $id, object $object): void
+    {
+        $this->storage[$id] = $object;
     }
 }

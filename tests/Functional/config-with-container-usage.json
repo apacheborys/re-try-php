@@ -1,6 +1,6 @@
 {
     "handlerExceptionDeclarator": {
-        "class": "ApacheBorys\\Retry\\HandlerExceptionDeclarator\\StandardHandlerExceptionDeclarator",
+        "class": "@ApacheBorys\\Retry\\HandlerExceptionDeclarator\\StandardHandlerExceptionDeclarator",
         "arguments": []
     },
     "items": {
