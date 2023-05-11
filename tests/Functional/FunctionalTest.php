@@ -109,8 +109,8 @@ SQL;
 
     public function __destruct()
     {
-//        if (file_exists(self::TRANSPORT_FILE)) {
-//            unlink(self::TRANSPORT_FILE);
-//        }
+        if (file_exists(self::TRANSPORT_FILE)) {
+            unlink(self::TRANSPORT_FILE);
+        }
     }
 }
