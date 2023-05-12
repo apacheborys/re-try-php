@@ -20,7 +20,8 @@
             "transport": {
                 "class": "ApacheBorys\\Retry\\Tests\\Functional\\Transport\\PdoTransportForTests",
                 "arguments": [
-                    "tests\/transport.data"
+                    "tests\/transport.data",
+                    "@ApacheBorys\\Retry\\Tests\\Functional\\Logger\\FakeLogger"
                 ]
             },
             "executor": {

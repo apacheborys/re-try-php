@@ -6,6 +6,7 @@ namespace ApacheBorys\Retry\Tests\Functional;
 use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
 use ApacheBorys\Retry\MessageHandler;
 use ApacheBorys\Retry\Tests\Functional\Container\FakeContainer;
+use ApacheBorys\Retry\Tests\Functional\Logger\FakeLogger;
 use ApacheBorys\Retry\Tests\Functional\Transport\PdoTransportForTests;
 use PDO;
 use PHPUnit\Framework\TestCase;
@@ -55,7 +56,10 @@ class FunctionalTest extends TestCase
 
         $container = new FakeContainer();
 
-        $pdoTransport = new PdoTransportForTests($transportFile);
+        $logger = new FakeLogger();
+        $container->set(FakeLogger::class, $logger);
+
+        $pdoTransport = new PdoTransportForTests($transportFile, $logger);
         $container->set(PdoTransportForTests::class, $pdoTransport);
 
         $declarator = new StandardHandlerExceptionDeclarator();
@@ -80,6 +84,11 @@ class FunctionalTest extends TestCase
         $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
 
         $this->assertEquals(0, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        $loggerStorage = $logger->getStorage();
+
+        $this->assertArrayHasKey('debug', $loggerStorage);
+        $this->assertCount(8, $loggerStorage['debug']);
 
         unlink($transportFile);
     }

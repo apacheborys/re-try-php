@@ -4,7 +4,7 @@ use ApacheBorys\Retry\ExceptionHandler;
 use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
 use ApacheBorys\Retry\Tests\Functional\Container\FakeContainer;
 use ApacheBorys\Retry\Tests\Functional\Exceptions\Mock;
-use ApacheBorys\Retry\Tests\Functional\Transport\PdoTransportForTests;
+use ApacheBorys\Retry\Tests\Functional\Logger\FakeLogger;
 
 include 'vendor/autoload.php';
 include 'src/HandlerExceptionDeclarator/StandardHandlerExceptionDeclarator.php';
@@ -16,8 +16,8 @@ $container = new FakeContainer();
 $declarator = new StandardHandlerExceptionDeclarator();
 $container->set(StandardHandlerExceptionDeclarator::class, $declarator);
 
-$pdoTransport = new PdoTransportForTests('tests/transport.data');
-$container->set(PdoTransportForTests::class, $pdoTransport);
+$logger = new FakeLogger();
+$container->set(FakeLogger::class, $logger);
 
 $retry = new ExceptionHandler($config, null, $container);
 $retry->initHandler();

@@ -7,13 +7,18 @@ use ApacheBorys\Retry\Entity\Config;
 use ApacheBorys\Retry\Entity\Message;
 use ApacheBorys\Retry\Interfaces\Transport;
 use PDO;
+use Psr\Log\LoggerInterface;
 
 class PdoTransportForTests implements Transport
 {
     private PDO $pdo;
 
-    public function __construct(string $dbLocation)
+    private ?LoggerInterface $logger;
+
+    public function __construct(string $dbLocation, ?LoggerInterface $logger = null)
     {
+        $this->logger = $logger;
+
         $this->pdo = new PDO('sqlite:' . $dbLocation);
 
         $sql = <<<SQL
@@ -31,6 +36,7 @@ CREATE TABLE IF NOT EXISTS retry_table (
 )
 SQL;
         $st = $this->pdo->prepare($sql);
+        $this->logSqlQuery($sql);
 
         if ((is_bool($st) && !$st) || !$st->execute()) {
             throw new \LogicException(
@@ -74,6 +80,8 @@ SQL;
         $executor = $message->getExecutor();
 
         $st = $this->pdo->prepare($sql);
+        $this->logSqlQuery($sql);
+
         $st->bindParam('id', $id);
         $st->bindParam('retry_name', $retryName);
         $st->bindParam('correlation_id', $correlationId);
@@ -110,6 +118,7 @@ SQL;
         }
 
         $st = $this->pdo->prepare($sql);
+        $this->logSqlQuery($sql);
 
         if (is_bool($st) && !$st) {
             throw new \LogicException(
@@ -166,6 +175,7 @@ OFFSET
 SQL;
 
         $st = $this->pdo->prepare($sql);
+        $this->logSqlQuery($sql);
 
         $st->bindParam('limit', $limit, PDO::PARAM_INT);
         $st->bindParam('offset', $offset, PDO::PARAM_INT);
@@ -197,6 +207,8 @@ SQL;
         $correlationId = $config->getExecutor()->getCorrelationId($exception, $config);
 
         $st = $this->pdo->prepare($sql);
+        $this->logSqlQuery($sql);
+
         $st->bindParam('correlation_id', $correlationId);
 
         $st->execute();
@@ -213,8 +225,17 @@ SQL;
         $id = $message->getId();
 
         $st = $this->pdo->prepare($sql);
+        $this->logSqlQuery($sql);
+
         $st->bindParam('id', $id);
 
         return $st->execute();
+    }
+
+    private function logSqlQuery(string $sql): void
+    {
+        if ($this->logger instanceof LoggerInterface) {
+            $this->logger->debug($sql);
+        }
     }
 }
