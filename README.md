@@ -109,3 +109,5 @@ Also, if you don't want to use Container to inject some instances from runtime. 
 ```
 
 In this case, handler/declarator will try to instantiate described class with arguments. In these arguments you can use same tricks with leading `@`; and `class`, `arguments` constructions.
+
+Leading `@` works with `class` too.
