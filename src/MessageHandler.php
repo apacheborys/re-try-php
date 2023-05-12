@@ -13,7 +13,7 @@ class MessageHandler extends AbstractHandler
     public function processRetries(array $processExceptionsOnly = [], int $maxMessagesPerException = -1): void
     {
         foreach ($this->config as $config) {
-            if (!empty($processExceptionsOnly) && !in_array($config->getName(), $processExceptionsOnly, true)) {
+            if (!empty($processExceptionsOnly) && !in_array($config->getHandledException(), $processExceptionsOnly, true)) {
                 continue;
             }
 

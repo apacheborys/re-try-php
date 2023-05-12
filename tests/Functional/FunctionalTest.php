@@ -3,41 +3,117 @@ declare(strict_types=1);
 
 namespace ApacheBorys\Retry\Tests\Functional;
 
+use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
 use ApacheBorys\Retry\MessageHandler;
-use ApacheBorys\Retry\Tests\Functional\Exceptions\Mock;
+use ApacheBorys\Retry\Tests\Functional\Container\FakeContainer;
+use ApacheBorys\Retry\Tests\Functional\Logger\FakeLogger;
+use ApacheBorys\Retry\Tests\Functional\Transport\PdoTransportForTests;
+use PDO;
 use PHPUnit\Framework\TestCase;
 
 class FunctionalTest extends TestCase
 {
     private const TRANSPORT_FILE = 'tests/transport.data';
-    private const CONFIG_FILE = __DIR__ . DIRECTORY_SEPARATOR . 'config.json';
 
     public function testExecution(): void
     {
-        exec('php tests/Functional/core-test.php');
+        $configFile = __DIR__ . DIRECTORY_SEPARATOR . 'config.json';
+        $fileToExec = 'tests/Functional/core-test.php';
+        $transportFile = self::TRANSPORT_FILE;
 
-        $messages = explode(PHP_EOL, file_get_contents(self::TRANSPORT_FILE));
-        $this->assertEquals(2, count($messages));
+        exec('php ' . $fileToExec);
 
-        $this->assertTrue(is_int(strpos(file_get_contents(self::TRANSPORT_FILE), '"isProcessed":false')));
+        $pdo = $this->getPdo($transportFile);
 
-        $config = json_decode(file_get_contents(self::CONFIG_FILE), true);
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
+
+        $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        $config = json_decode(file_get_contents($configFile), true);
         $worker = new MessageHandler($config);
-        $worker->processRetries([Mock::class]);
+        $worker->processRetries(['Some\\Fake\\Class']);
 
-        $messages = explode(PHP_EOL, file_get_contents(self::TRANSPORT_FILE));
-        $this->assertEquals(2, count($messages));
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
 
-        $this->assertTrue(is_int(strpos(file_get_contents(self::TRANSPORT_FILE), '"isProcessed":false')));
+        $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
 
         $worker->processRetries();
 
-        $messages = explode(PHP_EOL, file_get_contents(self::TRANSPORT_FILE));
-        $this->assertEquals(2, count($messages));
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
 
-        $this->assertTrue(is_int(strpos(file_get_contents(self::TRANSPORT_FILE), '"isProcessed":true')));
+        $this->assertEquals(0, $this->howManyUnprocessedMessagesInDb($pdo));
 
-        unlink(self::TRANSPORT_FILE);
+        unlink($transportFile);
+    }
+
+    public function testExecutionWithContainer(): void
+    {
+        $configFile = __DIR__ . DIRECTORY_SEPARATOR . 'config-with-container-usage.json';
+        $fileToExec = 'tests/Functional/core-test-with-container-usage.php';
+        $transportFile = self::TRANSPORT_FILE;
+
+        exec('php ' . $fileToExec);
+
+        $container = new FakeContainer();
+
+        $logger = new FakeLogger();
+        $container->set(FakeLogger::class, $logger);
+
+        $pdoTransport = new PdoTransportForTests($transportFile, $logger);
+        $container->set(PdoTransportForTests::class, $pdoTransport);
+
+        $declarator = new StandardHandlerExceptionDeclarator();
+        $container->set(StandardHandlerExceptionDeclarator::class, $declarator);
+
+        $pdo = $this->getPdo($transportFile);
+
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
+
+        $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        $config = json_decode(file_get_contents($configFile), true);
+        $worker = new MessageHandler($config, null, $container);
+        $worker->processRetries(['Some\\Fake\\Class']);
+
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
+
+        $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        $worker->processRetries();
+
+        $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
+
+        $this->assertEquals(0, $this->howManyUnprocessedMessagesInDb($pdo));
+
+        $loggerStorage = $logger->getStorage();
+
+        $this->assertArrayHasKey('debug', $loggerStorage);
+        $this->assertCount(8, $loggerStorage['debug']);
+
+        unlink($transportFile);
+    }
+
+    private function getPdo(string $transportFile): PDO
+    {
+        return new PDO('sqlite:' . $transportFile);
+    }
+
+    private function howManyMessagesInDb(PDO $pdo): int
+    {
+        $sql = <<<SQL
+SELECT COUNT(*) FROM `retry_table`
+SQL;
+
+        return (int) $pdo->query($sql)->fetchColumn();
+    }
+
+    private function howManyUnprocessedMessagesInDb(PDO $pdo): int
+    {
+        $sql = <<<SQL
+SELECT COUNT(*) FROM `retry_table` WHERE `is_processed` = 0
+SQL;
+
+        return (int) $pdo->query($sql)->fetchColumn();
     }
 
     public function __destruct()

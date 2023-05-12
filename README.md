@@ -29,45 +29,85 @@ Config example:
       * here we can define declarator what should register exception handling callback function, if you are plan to use 
       * standard php function set_exception_handler - you can ignore that section. StandardHandlerExceptionDeclarator is default
      **/
-    "handlerExceptionDefiner": {
+    "handlerExceptionDeclarator": {
       "class": "ApacheBorys\\Retry\\HandlerExceptionDefiner\\StandardHandlerExceptionDeclarator",
       "arguments": []
     },
     "items": {
+      /* name of retry */
       "test": {
-        /* name of retry */
-        "exception": "ApacheBorys\\Retry\\Tests\\Functional\\Exceptions\\Mock",
         /* what type of Exception we would like to retry */
-        "maxRetries": 4,
+        "exception": "ApacheBorys\\Retry\\Tests\\Functional\\Exceptions\\Mock",
         /* how many tries we should do */
+        "maxRetries": 4,
         /* here we are describing formula, how next execution time should be calculated. Calculated amount will be added to current time */
         "formula": [
           {
-            "operator": "+",
             /* here available *, -, + and / operators */
-            "argument": "QTY_TRIES"
+            "operator": "+",
             /* you can use QTY_TRIES operator or any integer value */
+            "argument": "QTY_TRIES"
           },
           {
             "operator": "*",
             "argument": "5"
           }
         ],
+        /* here you should define, what kind of transport you would use to deliver re-try messages to worker. Please pay your attention to https://github.com/apacheborys/re-try-php-basics-lib */
         "transport": {
-          /* here you should define, what kind of transport you would use to deliver re-try messages to worker */
           "class": "ApacheBorys\\Retry\\Tests\\Functional\\Transport\\FileTransportForTests",
+          /* each specific transport could have own arguments in constructor. Here you should define it */
           "arguments": [
-            /* each specific transport could have own arguments in constructor. Here you should define it */
             "tests\/transport.data"
           ]
         },
+        /* here you should define, what kind of executor you would use to perform re-try action */
         "executor": {
-          /* here you should define, what kind of executor you would use to perform re-try action */
           "class": "ApacheBorys\\Retry\\Tests\\Functional\\Executor\\Runtime",
-          "arguments": []
           /* each specific executor could have own arguments in constructor. Here you should define it */
+          "arguments": []
         }
       }
     }
 }
 ```
+
+The notice about `handlerExceptionDeclarator`, `transport` and `executor`:
+
+As second argument for constructor of `ApacheBorys\Retry\ExceptionHandler` and `ApacheBorys\Retry\MessageHandler` you can send ContainerInterface. In this case, you can define arguments for `handlerExceptionDeclarator`, `transport` and `executor` as instances from runtime. It will be fetched from this injected Container.
+
+For example:
+```json
+...
+    "transport": {
+        "class": "ApacheBorys\\Retry\\BasicTransport\\PdoTransport,
+        "arguments": [
+            "@pdoInstanceFromYourContainer"
+        ]
+    },
+...
+```
+
+Leading `@` indicates - you are trying to inject some instance from your container.
+
+Also, if you don't want to use Container to inject some instances from runtime. But you still need to create some instances to ensure proper execution for  `handlerExceptionDeclarator`, `transport` and `executor`, you can use next construction:
+
+```json
+...
+    "transport": {
+        "class": "ApacheBorys\\Retry\\BasicTransport\\PdoTransport,
+        "arguments": [
+            [
+                    "class": "\\PDO",
+                    "arguments": [
+                        "sqlite:/app/storage/retry-db.data'"
+                    ]
+            ]
+        ]
+    },
+...
+```
+
+In this case, handler/declarator will try to instantiate described class with arguments. In these arguments you can use same tricks with leading `@`; and `class`, `arguments` constructions.
+
+Leading `@` works with `class` too.

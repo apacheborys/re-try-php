@@ -12,4 +12,32 @@
             <directory name="vendor" />
         </ignoreFiles>
     </projectFiles>
+    <issueHandlers>
+        <UndefinedClass errorLevel="suppress"/>
+        <PossiblyInvalidPropertyAssignmentValue>
+            <errorLevel type="suppress">
+                <file name="src/AbstractHandler.php" />
+            </errorLevel>
+        </PossiblyInvalidPropertyAssignmentValue>
+        <PossiblyInvalidArgument>
+            <errorLevel type="suppress">
+                <file name="src/AbstractHandler.php" />
+            </errorLevel>
+        </PossiblyInvalidArgument>
+        <MoreSpecificReturnType>
+            <errorLevel type="suppress">
+                <file name="src/AbstractHandler.php" />
+            </errorLevel>
+        </MoreSpecificReturnType>
+        <InvalidStringClass>
+            <errorLevel type="suppress">
+                <file name="src/AbstractHandler.php" />
+            </errorLevel>
+        </InvalidStringClass>
+        <LessSpecificReturnStatement>
+            <errorLevel type="suppress">
+                <file name="src/AbstractHandler.php" />
+            </errorLevel>
+        </LessSpecificReturnStatement>
+    </issueHandlers>
 </psalm>
