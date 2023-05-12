@@ -99,14 +99,14 @@ SQL;
         $sql = <<<SQL
 SELECT 
     `id`,
-    `retry_name`,
-    `correlation_id`,
+    `retry_name` AS `retryName`,
+    `correlation_id` AS `correlationId`,
     `payload`,
-    `try_counter`,
-    `is_processed`,
-    `should_be_executed_at`,
+    `try_counter` AS `tryCounter`,
+    `is_processed` AS `isProcessed`,
+    `should_be_executed_at` AS `shouldBeExecutedAt`,
     `executor`,
-    `created_at`
+    `created_at` AS `createdAt`
 FROM
     `retry_table` AS `e`
 WHERE
@@ -158,14 +158,14 @@ SQL;
         $sql = <<<SQL
 SELECT 
     `id`,
-    `retry_name`,
-    `correlation_id`,
+    `retry_name` AS `retryName`,
+    `correlation_id` AS `correlationId`,
     `payload`,
-    `try_counter`,
-    `is_processed`,
-    `should_be_executed_at`,
+    `try_counter` AS `tryCounter`,
+    `is_processed` AS `isProcessed`,
+    `should_be_executed_at` AS `shouldBeExecutedAt`,
     `executor`,
-    `created_at`,
+    `created_at` AS `createdAt`
 FROM
     `retry_table` AS `e`
 LIMIT
