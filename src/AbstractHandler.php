@@ -24,7 +24,7 @@ abstract class AbstractHandler
 
     protected ?LoggerInterface $logger;
 
-    private ?ContainerInterface $container;
+    protected ?ContainerInterface $container;
 
     protected HandlerExceptionDeclaratorInterface $declarator;
 
