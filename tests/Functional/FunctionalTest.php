@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ApacheBorys\Retry\Tests\Functional;
 
 use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
+use ApacheBorys\Retry\HandlerFactory;
 use ApacheBorys\Retry\MessageHandler;
 use ApacheBorys\Retry\Tests\Functional\Container\FakeContainer;
 use ApacheBorys\Retry\Tests\Functional\Logger\FakeLogger;
@@ -30,7 +31,8 @@ class FunctionalTest extends TestCase
         $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
 
         $config = json_decode(file_get_contents($configFile), true);
-        $worker = new MessageHandler($config);
+        $factory = new HandlerFactory($config);
+        $worker = $factory->createMessageHandler();
         $worker->processRetries(['Some\\Fake\\Class']);
 
         $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
@@ -72,7 +74,8 @@ class FunctionalTest extends TestCase
         $this->assertEquals(1, $this->howManyUnprocessedMessagesInDb($pdo));
 
         $config = json_decode(file_get_contents($configFile), true);
-        $worker = new MessageHandler($config, null, $container);
+        $factory = new HandlerFactory($config);
+        $worker = $factory->createMessageHandler($container);
         $worker->processRetries(['Some\\Fake\\Class']);
 
         $this->assertEquals(1, $this->howManyMessagesInDb($pdo));
