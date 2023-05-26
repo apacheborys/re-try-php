@@ -21,22 +21,22 @@
         </PossiblyInvalidPropertyAssignmentValue>
         <PossiblyInvalidArgument>
             <errorLevel type="suppress">
-                <file name="src/AbstractHandler.php" />
+                <file name="src/HandlerFactory.php" />
             </errorLevel>
         </PossiblyInvalidArgument>
         <MoreSpecificReturnType>
             <errorLevel type="suppress">
-                <file name="src/AbstractHandler.php" />
+                <file name="src/HandlerFactory.php" />
             </errorLevel>
         </MoreSpecificReturnType>
         <InvalidStringClass>
             <errorLevel type="suppress">
-                <file name="src/AbstractHandler.php" />
+                <file name="src/HandlerFactory.php" />
             </errorLevel>
         </InvalidStringClass>
         <LessSpecificReturnStatement>
             <errorLevel type="suppress">
-                <file name="src/AbstractHandler.php" />
+                <file name="src/HandlerFactory.php" />
             </errorLevel>
         </LessSpecificReturnStatement>
     </issueHandlers>

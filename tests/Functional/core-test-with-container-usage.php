@@ -1,7 +1,7 @@
 <?php
 
-use ApacheBorys\Retry\ExceptionHandler;
 use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
+use ApacheBorys\Retry\HandlerFactory;
 use ApacheBorys\Retry\Tests\Functional\Container\FakeContainer;
 use ApacheBorys\Retry\Tests\Functional\Exceptions\Mock;
 use ApacheBorys\Retry\Tests\Functional\Logger\FakeLogger;
@@ -19,7 +19,8 @@ $container->set(StandardHandlerExceptionDeclarator::class, $declarator);
 $logger = new FakeLogger();
 $container->set(FakeLogger::class, $logger);
 
-$retry = new ExceptionHandler($config, null, $container);
+$factory = new HandlerFactory($config);
+$retry = $factory->createExceptionHandler($container);
 $retry->initHandler();
 
 echo 'I am a test' . PHP_EOL;
