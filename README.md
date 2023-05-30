@@ -9,12 +9,14 @@ With this library you will be able to introduce re-try approach in simple way:
 1. Create configuration
 2. When your application start, please add next 2 rows in the begining:
 ```php
-$retry = new ApacheBorys\Retry\ExceptionHandler($config);
+$factory = new \ApacheBorys\Retry\HandlerFactory($config);
+$retry = $factory->createExceptionHandler($yourContainer);
 $retry->initHandler();
 ```
 3. Start by another process code like that:
 ```php
-$worker = new ApacheBorys\Retry\MessageHandler($config);
+$factory = new \ApacheBorys\Retry\HandlerFactory($config);
+$worker = $factory->createMessageHandler($yourContainer);
 while (true) {
     $worker->processRetries();
     sleep(1);
