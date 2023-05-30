@@ -5,7 +5,6 @@ namespace ApacheBorys\Retry\Tests\Functional;
 
 use ApacheBorys\Retry\HandlerExceptionDeclarator\StandardHandlerExceptionDeclarator;
 use ApacheBorys\Retry\HandlerFactory;
-use ApacheBorys\Retry\MessageHandler;
 use ApacheBorys\Retry\Tests\Functional\Container\FakeContainer;
 use ApacheBorys\Retry\Tests\Functional\Logger\FakeLogger;
 use ApacheBorys\Retry\Tests\Functional\Transport\PdoTransportForTests;
