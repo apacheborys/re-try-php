@@ -11,7 +11,6 @@ With this library you will be able to introduce re-try approach in simple way:
 ```php
 $factory = new \ApacheBorys\Retry\HandlerFactory($config);
 $retry = $factory->createExceptionHandler($yourContainer);
-$retry->initHandler();
 ```
 3. Start by another process code like that:
 ```php

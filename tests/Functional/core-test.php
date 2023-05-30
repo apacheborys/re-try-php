@@ -9,7 +9,6 @@ $config = json_decode(file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'config.
 
 $factory = new HandlerFactory($config);
 $retry = $factory->createExceptionHandler();
-$retry->initHandler();
 
 echo 'I am a test' . PHP_EOL;
 

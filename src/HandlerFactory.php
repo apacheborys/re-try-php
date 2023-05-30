@@ -32,7 +32,10 @@ class HandlerFactory
 
     public function createExceptionHandler(?ContainerInterface $container = null): ExceptionHandler
     {
-        return new ExceptionHandler($this->compileConfig($container), $this->instantiateDeclarator($container), $this->logger);
+        $handler = new ExceptionHandler($this->compileConfig($container), $this->instantiateDeclarator($container), $this->logger);
+        $handler->initHandler();
+
+        return $handler;
     }
 
     public function createMessageHandler(?ContainerInterface $container = null): MessageHandler

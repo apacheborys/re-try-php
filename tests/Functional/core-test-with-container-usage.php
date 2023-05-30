@@ -21,7 +21,6 @@ $container->set(FakeLogger::class, $logger);
 
 $factory = new HandlerFactory($config);
 $retry = $factory->createExceptionHandler($container);
-$retry->initHandler();
 
 echo 'I am a test' . PHP_EOL;
 
